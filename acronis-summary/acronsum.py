@@ -50,15 +50,8 @@ def setup_logger():
     logger.info('Program Started')
 
 
-def process_emails(config):
+def process_emails(mail_server, from_email, to_email, pop_user, pop_password):
     """ Process emails received and generate summary email """
-
-    # Load settings from config
-    mail_server = config['main']['mail_server']
-    from_email = config['main']['from_email']
-    to_email = config['main']['to_email']
-    pop_user = config['main']['pop_user']
-    pop_password = config['main']['pop_password']
 
     email_data = []
 
@@ -217,12 +210,19 @@ def main():
     setup_logger()
 
     try:
+        # Load settings from config
         config = ConfigParser()
         config.read('acronsum.ini')
+        mail_server = config['main']['mail_server']
+        from_email = config['main']['from_email']
+        to_email = config['main']['to_email']
+        pop_user = config['main']['pop_user']
+        pop_password = config['main']['pop_password']
     except Exception as ex:
         logger.error('Could not load configuration: ' + str(ex))
     else:
-        process_emails(config)
+        process_emails(mail_server, from_email, to_email,
+                       pop_user, pop_password)
 
 
 if __name__ == '__main__':
