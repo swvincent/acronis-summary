@@ -19,6 +19,8 @@ from html2text import html2text                     # plaintext email output
 from more_itertools import unique_everseen          # Removing dupe errors
 import dateutil.parser                              # Parse date from email
 import dateutil.tz                                  # Prase date from email
+# from dateutil import parser, tz                     # Parse date from email
+from configparser import ConfigParser              # for config INI
 
 
 def setup_logger():
@@ -48,19 +50,21 @@ def setup_logger():
     logger.info('Program Started')
 
 
-def process_emails():
-    # TODO: Load settings from INI
-    mail_server = 'mailserver.com'
-    from_email = 'username@mailserver.com'
-    to_email = 'other@mailserver.com'
-    pop_user = 'username'
-    pop_pass = 'password'
+def process_emails(config):
+    """ Process emails received and generate summary email """
+
+    # Load settings from config
+    mail_server = config['main']['mail_server']
+    from_email = config['main']['from_email']
+    to_email = config['main']['to_email']
+    pop_user = config['main']['pop_user']
+    pop_password = config['main']['pop_password']
 
     email_data = []
 
     m = poplib.POP3_SSL(mail_server)
     m.user(pop_user)
-    m.pass_(pop_pass)
+    m.pass_(pop_password)
 
     num_messages = len(m.list()[1])
 
@@ -209,6 +213,17 @@ def send_email(msg, mail_server):
     smtp.quit()
 
 
-# Entry point
-setup_logger()
-process_emails()
+def main():
+    setup_logger()
+
+    try:
+        config = ConfigParser()
+        config.read('acronsum.ini')
+    except Exception as ex:
+        logger.error('Could not load configuration: ' + str(ex))
+    else:
+        process_emails(config)
+
+
+if __name__ == '__main__':
+    main()
