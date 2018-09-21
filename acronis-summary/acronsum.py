@@ -78,7 +78,7 @@ def process_emails(mail_server, from_email, to_email, pop_user, pop_password):
                     logger.info('Ignoring message of type "{}"'
                                 .format(part.get_content_type()))
             # Delete email
-            # m.dele(i+1)
+            m.dele(i+1)
 
         try:
             send_backups_email(mail_server, from_email, to_email, email_data)
